@@ -9,6 +9,15 @@ Self-contained DevOps showcase that turns the RomanEstate domain into a compact 
 - `Prometheus`, `Grafana`, `Alertmanager`, `Loki`, `Tempo`, and `OpenTelemetry Collector`
 - operational Python tooling for bootstrap, smoke, e2e, traffic generation, and backup/restore
 
+## Portfolio Role
+
+This repository is a supporting service-platform lab in the portfolio, not the primary platform flagship.
+
+Its purpose is to answer a different question from the Kubernetes and IaC repositories:
+"What does the platform actually support when real services, async flows, runtime dependencies, observability, and backup/restore are all in play?"
+
+Use this repo after `enterprise-onprem-platform-lab` or `monitoring-stack-demo` when the conversation moves from platform capabilities to workload topology and operator experience.
+
 ## What This Repo Demonstrates
 
 - extracting domain slices out of a monolith into runnable services
