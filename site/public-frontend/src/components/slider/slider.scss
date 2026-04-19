@@ -1,0 +1,438 @@
+@import "../../responsive.scss";
+
+.slider {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+
+  &.empty {
+    display: block;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(143, 92, 246, 0.14);
+    color: var(--color-accent-strong);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+
+    &.subtle {
+      background: rgba(143, 92, 246, 0.08);
+    }
+  }
+
+  .heroColumn,
+  .thumbRail,
+  .emptyGallery {
+    border-radius: 28px;
+    border: 1px solid rgba(143, 92, 246, 0.12);
+    background:
+      radial-gradient(circle at top left, rgba(176, 124, 255, 0.14), transparent 36%),
+      white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .heroColumn {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .heroFrame {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    border: none;
+    border-radius: 24px;
+    overflow: hidden;
+    padding: 0;
+    cursor: pointer;
+    background: #f4efff;
+
+    @include sm {
+      min-height: 320px;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .heroOverlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 22px;
+    background: linear-gradient(180deg, rgba(9, 6, 21, 0) 0%, rgba(9, 6, 21, 0.74) 100%);
+    color: white;
+
+    @include sm {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .heroCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    strong {
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    small {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 14px;
+    }
+  }
+
+  .heroAction {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .gallerySummary {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .summaryCopy {
+    flex: 1 1 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    strong {
+      font-size: 24px;
+      color: var(--color-text);
+    }
+
+    p {
+      color: var(--color-muted);
+      line-height: 1.7;
+    }
+  }
+
+  .summaryChips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .summaryChip {
+    min-width: 130px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(143, 92, 246, 0.1);
+    background: var(--color-surface);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+
+    span {
+      color: var(--color-muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    strong {
+      color: var(--color-accent-strong);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    &.active {
+      border-color: rgba(143, 92, 246, 0.22);
+      background: rgba(143, 92, 246, 0.08);
+      box-shadow: 0 18px 32px rgba(109, 40, 217, 0.08);
+    }
+  }
+
+  .thumbRail {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-self: stretch;
+  }
+
+  .thumbCard {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    border: 1px solid rgba(143, 92, 246, 0.08);
+    background: var(--color-surface);
+    border-radius: 20px;
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: rgba(143, 92, 246, 0.2);
+      box-shadow: 0 14px 28px rgba(48, 16, 90, 0.08);
+    }
+
+    &.active {
+      border-color: rgba(143, 92, 246, 0.24);
+      background: rgba(143, 92, 246, 0.08);
+    }
+
+    img {
+      width: 100%;
+      height: 92px;
+      border-radius: 16px;
+      object-fit: cover;
+    }
+  }
+
+  .thumbCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+
+    span {
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    small {
+      color: var(--color-muted);
+    }
+  }
+
+  .emptyGallery {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+    gap: 20px;
+
+    @include md {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .emptyPreview {
+    min-height: 320px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 24px;
+    }
+  }
+
+  .emptyCopy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+
+    h2 {
+      font-size: 34px;
+      line-height: 1.15;
+    }
+
+    p {
+      color: var(--color-muted);
+      line-height: 1.8;
+    }
+  }
+
+  .fullSlider {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(12, 10, 24, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 28px;
+    overflow-y: auto;
+
+    @include sm {
+      padding: 16px;
+    }
+  }
+
+  .lightboxShell {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .lightboxHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+
+    @include sm {
+      flex-direction: column;
+    }
+  }
+
+  .lightboxCopy {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h2 {
+      font-size: 34px;
+      line-height: 1.1;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.72);
+    }
+  }
+
+  .closeButton {
+    min-height: 48px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .lightboxCategories {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .lightboxCategory {
+    min-height: 42px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+
+    &.active {
+      background: linear-gradient(135deg, rgba(166, 103, 255, 0.94), rgba(111, 45, 255, 0.94));
+      border-color: transparent;
+      box-shadow: 0 20px 36px rgba(111, 45, 255, 0.24);
+    }
+  }
+
+  .lightboxBody {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 88px;
+    gap: 20px;
+    align-items: center;
+
+    @include md {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .navArrow {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    @include md {
+      display: none;
+    }
+
+    img {
+      width: 34px;
+
+      &.right {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .lightboxImage {
+    min-height: 70vh;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+
+    @include sm {
+      min-height: 52vh;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  .filmstrip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 14px;
+  }
+
+  .filmThumb {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    color: white;
+    text-align: left;
+
+    &.active {
+      border-color: rgba(172, 116, 255, 0.72);
+      box-shadow: 0 18px 32px rgba(111, 45, 255, 0.24);
+    }
+
+    img {
+      width: 100%;
+      height: 96px;
+      object-fit: cover;
+    }
+
+    span {
+      display: block;
+      padding: 10px 12px 12px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.88);
+    }
+  }
+}

@@ -1,0 +1,72 @@
+.newBuildHubPage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .hubHero,
+  .partnerSection {
+    border-radius: 28px;
+    border: 1px solid rgba(143, 92, 246, 0.12);
+    background:
+      radial-gradient(circle at top left, rgba(176, 124, 255, 0.16), transparent 34%),
+      white;
+    padding: 24px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .eyebrow,
+  .promotionBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(143, 92, 246, 0.12);
+    color: var(--color-accent-strong);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hubHero {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    p {
+      color: var(--color-muted);
+      line-height: 1.7;
+      max-width: 760px;
+    }
+  }
+
+  .hubGrid,
+  .partnerGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  .hubCard,
+  .partnerCard {
+    border-radius: 22px;
+    border: 1px solid rgba(143, 92, 246, 0.1);
+    background: white;
+    padding: 18px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hubCard small,
+  .hubCard p,
+  .partnerCard p {
+    color: var(--color-muted);
+  }
+
+  .hubCard a {
+    color: var(--color-accent-strong);
+    font-weight: 700;
+  }
+}

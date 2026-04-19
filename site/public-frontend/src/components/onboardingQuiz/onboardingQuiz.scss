@@ -1,0 +1,117 @@
+@import "../../responsive.scss";
+
+.quizLauncher {
+  min-height: 52px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(143, 92, 246, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--color-accent-strong);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+}
+
+.quizOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(21, 14, 38, 0.64);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.quizCard {
+  width: min(720px, 100%);
+  border-radius: 28px;
+  background: white;
+  border: 1px solid rgba(143, 92, 246, 0.14);
+  box-shadow: 0 30px 60px rgba(48, 16, 90, 0.2);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(143, 92, 246, 0.12);
+    color: var(--color-accent-strong);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+.quizHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  p {
+    margin-top: 10px;
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+
+  @include sm {
+    flex-direction: column;
+  }
+}
+
+.closeButton,
+.quizSubmit {
+  min-height: 50px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.closeButton {
+  background: rgba(143, 92, 246, 0.08);
+  color: var(--color-accent-strong);
+}
+
+.quizForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+
+  @include sm {
+    grid-template-columns: 1fr;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    span {
+      color: var(--color-muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+  }
+
+  input,
+  select {
+    min-height: 54px;
+    border-radius: 16px;
+    border: 1px solid rgba(143, 92, 246, 0.16);
+    padding: 0 14px;
+    font: inherit;
+  }
+}
+
+.quizSubmit {
+  grid-column: 1 / -1;
+  background: var(--gradient-accent);
+  color: white;
+  box-shadow: var(--shadow-accent);
+}

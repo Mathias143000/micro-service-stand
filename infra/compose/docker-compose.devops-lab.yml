@@ -1,0 +1,227 @@
+services:
+  edge:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:-host.docker.internal:8080}
+      PUBLIC_FRONTEND_UPSTREAM: ${PUBLIC_FRONTEND_UPSTREAM:-host.docker.internal:5173}
+      INTERNAL_FRONTEND_UPSTREAM: ${INTERNAL_FRONTEND_UPSTREAM:-host.docker.internal:5174}
+      AUTH_SERVICE_UPSTREAM: ${AUTH_SERVICE_UPSTREAM:-auth-service:8081}
+      LISTING_SERVICE_UPSTREAM: ${LISTING_SERVICE_UPSTREAM:-listing-service:8082}
+      DEAL_SERVICE_UPSTREAM: ${DEAL_SERVICE_UPSTREAM:-deal-service:8083}
+      PROFILE_SERVICE_UPSTREAM: ${PROFILE_SERVICE_UPSTREAM:-profile-service:8084}
+      NOTIFICATION_SERVICE_UPSTREAM: ${NOTIFICATION_SERVICE_UPSTREAM:-notification-service:8085}
+    ports:
+      - "${EDGE_HTTP_PORT:-8088}:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      auth-service:
+        condition: service_started
+      listing-service:
+        condition: service_started
+      listing-service-replica:
+        condition: service_started
+      deal-service:
+        condition: service_started
+      profile-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    volumes:
+      - ../nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ../nginx/static:/usr/share/nginx/html:ro
+    networks:
+      - romanestate
+
+  auth-service:
+    build:
+      context: ../../services/auth-service
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-realestate}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-0123456789abcdef0123456789abcdef}
+      APP_JWT_EXPIRATION_MINUTES: 1440
+      APP_DEMO_USERS_ENABLED: "true"
+      APP_CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8088,http://127.0.0.1:8088
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+    ports:
+      - "${AUTH_SERVICE_HOST_PORT:-8081}:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - romanestate
+
+  listing-service:
+    build:
+      context: ../../services/listing-service
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8082
+      RABBITMQ_MANAGEMENT_URL: http://rabbitmq:15672/api
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-romanestate}
+      RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-romanestate}
+      EVENT_QUEUE: romanestate.events
+    ports:
+      - "${LISTING_SERVICE_HOST_PORT:-8082}:8082"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - romanestate
+
+  listing-service-replica:
+    build:
+      context: ../../services/listing-service
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8082
+      RABBITMQ_MANAGEMENT_URL: http://rabbitmq:15672/api
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-romanestate}
+      RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-romanestate}
+      EVENT_QUEUE: romanestate.events
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - romanestate
+
+  deal-service:
+    build:
+      context: ../../services/deal-service
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8083
+      RABBITMQ_MANAGEMENT_URL: http://rabbitmq:15672/api
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-romanestate}
+      RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-romanestate}
+      EVENT_QUEUE: romanestate.events
+    ports:
+      - "${DEAL_SERVICE_HOST_PORT:-8083}:8083"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - romanestate
+
+  profile-service:
+    build:
+      context: ../../services/profile-service
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8084
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "${PROFILE_SERVICE_HOST_PORT:-8084}:8084"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - romanestate
+
+  notification-service:
+    build:
+      context: ../../services/notification-service
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8085
+      RABBITMQ_MANAGEMENT_URL: http://rabbitmq:15672/api
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-romanestate}
+      RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-romanestate}
+      EVENT_QUEUE: romanestate.events
+    ports:
+      - "${NOTIFICATION_SERVICE_HOST_PORT:-8085}:8085"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - romanestate
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-realestate}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-realestate}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - romanestate
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - romanestate
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-romanestate}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-romanestate}
+    ports:
+      - "${RABBITMQ_HOST_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - romanestate
+
+  minio:
+    image: ${MINIO_IMAGE:-minio/minio:latest}
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - romanestate
+
+networks:
+  romanestate:
+    name: romanestate-devops-lab
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  minio_data:

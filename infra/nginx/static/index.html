@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RomanEstate DevOps Lab</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+      main {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 48px 24px 72px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 2.4rem;
+      }
+      p {
+        color: #cbd5e1;
+        line-height: 1.6;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+      .card {
+        background: rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 18px;
+        padding: 18px;
+      }
+      a {
+        color: #38bdf8;
+        text-decoration: none;
+      }
+      code {
+        color: #f8fafc;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>RomanEstate DevOps Lab</h1>
+      <p>
+        Self-contained microservices demo with edge routing, RabbitMQ-based async workflows,
+        Redis-backed profile state, PostgreSQL-backed auth, and Grafana-centric observability.
+      </p>
+
+      <div class="grid">
+        <section class="card">
+          <h2>Core APIs</h2>
+          <p><a href="/api/auth/me">Auth service</a></p>
+          <p><a href="/api/listings/listings">Listing service</a></p>
+          <p><a href="/api/deals/viewing-requests">Deal service</a></p>
+          <p><a href="/api/profile/favorites?user_id=demo-user">Profile service</a></p>
+          <p><a href="/api/notifications/stats">Notification service</a></p>
+        </section>
+        <section class="card">
+          <h2>Observability</h2>
+          <p><a href="http://127.0.0.1:3000">Grafana</a></p>
+          <p><a href="http://127.0.0.1:9090">Prometheus</a></p>
+          <p><a href="http://127.0.0.1:9093">Alertmanager</a></p>
+          <p><a href="http://127.0.0.1:3100/ready">Loki</a></p>
+          <p><a href="http://127.0.0.1:3200/ready">Tempo</a></p>
+        </section>
+        <section class="card">
+          <h2>Demo Flow</h2>
+          <p><code>python tools/bootstrap_env.py up --with-observability --build</code></p>
+          <p><code>python tools/e2e_flow.py --base-url http://127.0.0.1:8088</code></p>
+          <p><code>python tools/traffic_generator.py --base-url http://127.0.0.1:8088</code></p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

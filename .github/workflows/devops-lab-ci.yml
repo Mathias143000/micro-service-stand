@@ -1,0 +1,82 @@
+name: devops-lab-ci
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate auth-service
+        run: mvn -B -f services/auth-service/pom.xml test
+
+      - name: Validate Python services and tools
+        run: |
+          python -m py_compile \
+            tools/bootstrap_env.py \
+            tools/compose_doctor.py \
+            tools/smoke_check.py \
+            tools/e2e_flow.py \
+            tools/traffic_generator.py \
+            tools/backup_postgres.py \
+            tools/restore_postgres.py \
+            services/listing-service/app/server.py \
+            services/deal-service/app/server.py \
+            services/profile-service/app/server.py \
+            services/notification-service/app/server.py
+          python -m unittest discover -s services/listing-service/tests
+          python -m unittest discover -s services/deal-service/tests
+          python -m unittest discover -s services/profile-service/tests
+          python -m unittest discover -s services/notification-service/tests
+
+      - name: Validate compose manifests
+        run: |
+          docker compose --env-file infra/compose/.env.example -f infra/compose/docker-compose.devops-lab.yml config
+          docker compose --env-file infra/compose/.env.example -f infra/compose/docker-compose.devops-lab.yml -f infra/compose/docker-compose.observability.yml config
+
+      - name: Start full lab and run smoke
+        run: python tools/bootstrap_env.py up --with-observability --build --smoke-after-up
+
+      - name: Run end-to-end flow
+        run: python tools/e2e_flow.py --base-url http://127.0.0.1:8088 --json
+
+      - name: Run lightweight load scenario
+        run: python tools/traffic_generator.py --base-url http://127.0.0.1:8088 --iterations 8 --concurrency 2 --json
+
+      - name: Verify PostgreSQL backup and restore
+        run: |
+          mkdir -p artifacts
+          python tools/backup_postgres.py --output artifacts/realestate.sql
+          python tools/restore_postgres.py --input artifacts/realestate.sql --target-db realestate_restore_ci
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devops-lab-artifacts
+          path: |
+            artifacts
+
+      - name: Shut down lab
+        if: always()
+        run: docker compose --env-file infra/compose/.env.example -f infra/compose/docker-compose.devops-lab.yml -f infra/compose/docker-compose.observability.yml down -v

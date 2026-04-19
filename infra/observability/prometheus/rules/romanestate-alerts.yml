@@ -1,0 +1,52 @@
+groups:
+  - name: romanestate-platform
+    rules:
+      - alert: RomanEstateTargetDown
+        expr: up{job=~"auth-service|listing-service|deal-service|profile-service|notification-service|postgres-exporter|redis-exporter|node-exporter|cadvisor|tempo|otel-collector"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "RomanEstate target is down"
+          description: "Prometheus cannot scrape {{ $labels.job }} on {{ $labels.instance }}."
+
+      - alert: AuthServiceHigh5xxRate
+        expr: sum(rate(http_server_requests_seconds_count{application="auth-service",status=~"5.."}[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Auth service returns elevated 5xx responses"
+          description: "The auth-service 5xx rate is above the demo threshold for at least 5 minutes."
+
+      - alert: AuthServiceHighLatencyP95
+        expr: histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{application="auth-service"}[5m]))) > 1
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Auth service p95 latency is elevated"
+          description: "The auth-service p95 latency is above 1 second for at least 10 minutes."
+
+      - alert: PostgresExporterMissing
+        expr: up{job="postgres-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "PostgreSQL exporter is unavailable"
+          description: "Prometheus cannot scrape postgres-exporter."
+
+      - alert: RedisExporterMissing
+        expr: up{job="redis-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Redis exporter is unavailable"
+          description: "Prometheus cannot scrape redis-exporter."

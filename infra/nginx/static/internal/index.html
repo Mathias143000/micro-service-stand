@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RomanEstate Internal Console</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #111827;
+        color: #f9fafb;
+        padding: 40px 24px;
+      }
+      .panel {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px;
+        border-radius: 18px;
+        background: rgba(31, 41, 55, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.26);
+      }
+      a {
+        color: #67e8f9;
+        text-decoration: none;
+      }
+      li {
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="panel">
+      <h1>Internal Operations Console</h1>
+      <p>Use this lightweight internal page to jump straight into service state and platform signals.</p>
+      <ul>
+        <li><a href="/api/notifications/events">Notification events</a></li>
+        <li><a href="/api/listings/stats">Listing stats</a></li>
+        <li><a href="/api/deals/stats">Deal stats</a></li>
+        <li><a href="/api/profile/stats">Profile stats</a></li>
+        <li><a href="http://127.0.0.1:3000">Open Grafana</a></li>
+      </ul>
+    </section>
+  </body>
+</html>

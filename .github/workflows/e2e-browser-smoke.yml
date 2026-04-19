@@ -1,0 +1,102 @@
+name: e2e-browser-smoke
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "back/**"
+      - ".github/workflows/e2e-browser-smoke.yml"
+  pull_request:
+    paths:
+      - "back/**"
+      - ".github/workflows/e2e-browser-smoke.yml"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: realestate
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d realestate"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          mvn -B -f back/pom.xml -DskipTests compile
+          npm ci --prefix back/public-frontend
+          npm ci --prefix back/internal-frontend
+          npm install --prefix back/e2e
+
+      - name: Install Playwright browser
+        run: npx --prefix back/e2e playwright install --with-deps chromium
+
+      - name: Start backend and frontends
+        run: |
+          SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5433/realestate \
+          SPRING_DATASOURCE_USERNAME=postgres \
+          SPRING_DATASOURCE_PASSWORD=postgres \
+          APP_DEMO_USERS_ENABLED=true \
+          mvn -B -f back/pom.xml spring-boot:run > back/backend-ci.log 2>&1 &
+
+          npm --prefix back/public-frontend run dev -- --host 127.0.0.1 --port 5173 > back/public-ci.log 2>&1 &
+          npm --prefix back/internal-frontend run dev -- --host 127.0.0.1 --port 5174 > back/internal-ci.log 2>&1 &
+
+      - name: Wait for services
+        run: |
+          for url in "http://127.0.0.1:8080/actuator/health" "http://127.0.0.1:5173" "http://127.0.0.1:5174/login"; do
+            echo "Waiting for $url"
+            for i in {1..90}; do
+              if curl -fsS "$url" >/dev/null; then
+                echo "$url is ready"
+                break
+              fi
+              if [ "$i" -eq 90 ]; then
+                echo "Timed out waiting for $url"
+                exit 1
+              fi
+              sleep 2
+            done
+          done
+
+      - name: Run browser smoke
+        run: npm --prefix back/e2e run test
+
+      - name: Upload logs and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-browser-smoke-artifacts
+          path: |
+            back/backend-ci.log
+            back/public-ci.log
+            back/internal-ci.log
+            back/e2e/playwright-report
+            back/e2e/test-results

@@ -1,0 +1,40 @@
+.popupContainer{
+  display: flex;
+  gap: 20px;
+
+  img{
+    width: 72px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .textContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+  }
+}
+
+.marketMarkerWrap {
+  background: transparent;
+  border: none;
+}
+
+.marketMarker {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-accent-strong);
+  border: 3px solid white;
+  box-shadow: 0 14px 24px rgba(109, 40, 217, 0.28);
+
+  &.active {
+    width: 22px;
+    height: 22px;
+    background: #22c55e;
+    box-shadow: 0 18px 30px rgba(34, 197, 94, 0.3);
+  }
+}
