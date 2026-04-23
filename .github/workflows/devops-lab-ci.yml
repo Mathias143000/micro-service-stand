@@ -35,6 +35,7 @@ jobs:
           python -m py_compile \
             tools/bootstrap_env.py \
             tools/compose_doctor.py \
+            tools/hardening_check.py \
             tools/smoke_check.py \
             tools/e2e_flow.py \
             tools/traffic_generator.py \
@@ -53,6 +54,9 @@ jobs:
         run: |
           docker compose --env-file infra/compose/.env.example -f infra/compose/docker-compose.devops-lab.yml config
           docker compose --env-file infra/compose/.env.example -f infra/compose/docker-compose.devops-lab.yml -f infra/compose/docker-compose.observability.yml config
+
+      - name: Run hardening policy check
+        run: python tools/hardening_check.py
 
       - name: Start full lab and run smoke
         run: python tools/bootstrap_env.py up --with-observability --build --smoke-after-up

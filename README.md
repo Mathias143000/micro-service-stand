@@ -22,6 +22,7 @@ Use this repo after `enterprise-onprem-platform-lab` or `monitoring-stack-demo` 
 
 - extracting domain slices out of a monolith into runnable services
 - routing traffic through one edge entrypoint
+- edge security headers, request timeout, and rate-limit guardrails
 - mixing sync API flows with RabbitMQ-backed async processing
 - pairing metrics, logs, alerts, and traces in a Grafana-centric stack
 - validating a local demo environment with reproducible scripts and CI
@@ -108,6 +109,7 @@ The repo has a runnable CI path in [.github/workflows/devops-lab-ci.yml](.github
 - `auth-service` unit tests
 - Python service unit tests
 - compose config validation
+- repo-local hardening policy check
 - full stack bootstrap
 - smoke checks
 - end-to-end service flow
@@ -118,6 +120,7 @@ The repo has a runnable CI path in [.github/workflows/devops-lab-ci.yml](.github
 
 - [Demo Runbook](runbooks/demo.md)
 - [Backup and Restore Runbook](runbooks/backup-restore.md)
+- [Workload Hardening Notes](docs/hardening.md)
 - [Observability Stack Notes](infra/observability/README.md)
 
 ## Known Limitations
@@ -126,6 +129,7 @@ The repo has a runnable CI path in [.github/workflows/devops-lab-ci.yml](.github
 - the public and internal UI in full demo mode are static operator landing pages served by `nginx`
 - tracing is currently proven on the auth path first, not on every cross-service hop; the local demo keeps `Tempo` on a pinned single-binary release for a stable compose workflow
 - `MinIO` is part of the platform shell, but the first DoD slice does not yet exercise media flows end to end
+- edge hardening is intentionally local-demo oriented; it is not a substitute for a production WAF or ingress controller policy
 
 ## Future Improvements
 

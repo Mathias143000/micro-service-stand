@@ -11,6 +11,8 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 COPY --from=build /workspace/target/auth-service-0.0.1-SNAPSHOT.jar /app/auth-service.jar
+RUN useradd --create-home --shell /usr/sbin/nologin appuser
+USER appuser
 
 EXPOSE 8081
 
