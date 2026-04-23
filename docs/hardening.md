@@ -21,6 +21,12 @@ python tools\e2e_flow.py --base-url http://127.0.0.1:8088 --json
 python tools\traffic_generator.py --base-url http://127.0.0.1:8088 --iterations 12 --concurrency 3 --json
 ```
 
+The CI smoke path checks observability component readiness. Deeper log/trace evidence is available as an explicit operator check after the stack has warmed up:
+
+```powershell
+python tools\smoke_check.py --base-url http://127.0.0.1:8088 --check-auth --check-services --check-observability --check-logs --check-tracing
+```
+
 The hardening check writes a local report to:
 
 ```text

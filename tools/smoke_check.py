@@ -154,6 +154,7 @@ def check_observability(
     loki_service_label: str,
     tempo_url: str,
     trace_service_name: str,
+    check_logs: bool,
     check_tracing: bool,
 ) -> list[SmokeResult]:
     results = [
@@ -164,7 +165,7 @@ def check_observability(
         check_endpoint_with_retry("tempo:ready", f"{tempo_url.rstrip('/')}/ready", retries=12, delay_seconds=3.0),
     ]
 
-    if results[3].ok:
+    if check_logs and results[3].ok:
         results.append(check_loki_logs(loki_url, loki_service_label))
     if check_tracing and results[4].ok:
         results.append(check_tempo_traces(tempo_url, trace_service_name))
@@ -210,6 +211,7 @@ def main() -> int:
     parser.add_argument("--check-auth", action="store_true", help="also run auth login/me checks")
     parser.add_argument("--check-services", action="store_true", help="check extracted domain services through the edge")
     parser.add_argument("--check-observability", action="store_true", help="also run Prometheus/Grafana/Alertmanager checks")
+    parser.add_argument("--check-logs", action="store_true", help="query Loki for indexed logs after smoke traffic")
     parser.add_argument("--check-tracing", action="store_true", help="query Tempo for traces after auth traffic")
     parser.add_argument("--skip-public-root", action="store_true", help="skip the / check when the public frontend is not running")
     parser.add_argument("--auth-email", default="admin@example.com", help="email for auth smoke")
@@ -245,6 +247,7 @@ def main() -> int:
                 args.loki_service_label,
                 args.tempo_url,
                 args.trace_service_name,
+                args.check_logs,
                 args.check_tracing,
             )
         )
