@@ -131,10 +131,12 @@ The repo has a runnable CI path in [.github/workflows/devops-lab-ci.yml](.github
 - `MinIO` is part of the platform shell, but the first DoD slice does not yet exercise media flows end to end
 - edge hardening is intentionally local-demo oriented; it is not a substitute for a production WAF or ingress controller policy
 
-## Future Improvements
+## Explicit Non-Goals
 
 - migrate additional bounded contexts into richer service implementations
 - add outbox/inbox guarantees for event publishing and consumption
 - expand trace coverage beyond auth login to the full listing and deal flow
 - add object-storage backup automation and incident simulation
 - replace the static demo pages with dedicated public and internal frontend containers
+
+These are deliberately outside the current DoD. This repo is finished as a supporting service-platform lab, not as a full product rewrite.

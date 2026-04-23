@@ -2,7 +2,7 @@
 
 ## Objective
 
-This document turns the `todo.md` target state into an implementable architecture plan.
+This document records the target service-platform architecture implemented by this lab.
 The current application remains the source of truth, while new services and infrastructure
 are introduced around it in a staged, migration-friendly way.
 
