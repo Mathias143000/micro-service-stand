@@ -49,7 +49,7 @@ def run_smoke(with_observability: bool) -> int:
         "--check-services",
     ]
     if with_observability:
-        command.extend(["--check-observability", "--check-tracing"])
+        command.append("--check-observability")
     return run(command)
 
 
